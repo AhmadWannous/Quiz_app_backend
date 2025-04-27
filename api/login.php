@@ -23,3 +23,4 @@ if (!$user || !password_verify($password, $user["password"])) {
 
 unset($user["password"]);
 echo json_encode(["success" => true, "user" => $user]);
+?>
