@@ -24,7 +24,7 @@ if ($stmt->rowCount() > 0) {
 
 $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
 
-$stmt = $conn->prepare("INSERT INTO users (first_name, last_name, email, password, role) VALUES (?, ?, ?, ?, 'user')");
+$stmt = $conn->prepare("INSERT INTO users (first_name, last_name, email, password) VALUES (?, ?, ?, ?)");
 $stmt->execute([$firstName, $lastName, $email, $hashedPassword]);
 
 echo json_encode(["success" => true, "message" => "Registration successful!"]);
