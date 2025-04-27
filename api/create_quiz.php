@@ -1,32 +1,24 @@
 <?php
-$host = "localhost";
-$dbname = "quiz_app";
-$username = "root";
-$password = "";
+header("Content-Type: application/json");
+require_once("db.php");
 
-$conn = new mysqli($host, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-$title = isset($_POST['title']) ? trim($_POST['title']) : null;
-$created_by = isset($_POST['created_by']) ? intval($_POST['created_by']) : null;
+$title = trim($_POST['title'] ?? '');
+$created_by = intval($_POST['created_by'] ?? 0);
 
 if (!$title || !$created_by) {
-    echo json_encode(["status" => "error", "message" => "Missing quiz title or creator ID."]);
+    echo json_encode(["success" => false, "message" => "Missing quiz title or creator ID."]);
     exit;
 }
 
-$stmt = $conn->prepare("INSERT INTO quizzes (title, created_by) VALUES (?, ?)");
-$stmt->bind_param("si", $title, $created_by);
+try {
+    $stmt = $conn->prepare("INSERT INTO quizzes (title, created_by) VALUES (?, ?)");
+    $stmt->execute([$title, $created_by]);
 
-if ($stmt->execute()) {
-    echo json_encode(["status" => "success", "quiz_id" => $stmt->insert_id]);
-} else {
-    echo json_encode(["status" => "error", "message" => "Failed to create quiz."]);
+    echo json_encode([
+        "success" => true,
+        "quiz_id" => $conn->lastInsertId()
+    ]);
+} catch (PDOException $e) {
+    echo json_encode(["success" => false, "message" => "Failed to create quiz."]);
 }
-
-$stmt->close();
-$conn->close();
 ?>
