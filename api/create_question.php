@@ -23,3 +23,4 @@ $stmt = $conn->prepare("
 $stmt->execute([$quizId, $questionText, $option1, $option2, $option3, $correctOption]);
 
 echo json_encode(["success" => true, "message" => "Question added successfully."]);
+?>
